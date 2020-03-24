@@ -3,6 +3,12 @@ name = "vmulti-client"
 version = "0.1.0"
 authors = ["vagola <vladislavs.golubs@yandex.ru>"]
 edition = "2018"
+description = "Crate for interacting with virtual input driver"
+homepage = "https://github.com/vagola/vmulti-client"
+repository = "https://github.com/vagola/vmulti-client"
+keywords = ["hid", "input", "virtual", "vmulti"]
+readme = "README.md"
+license = "MIT"
 
 [dependencies]
 libc = "0.2"
