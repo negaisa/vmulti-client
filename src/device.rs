@@ -1,7 +1,6 @@
 use std::mem::MaybeUninit;
 use std::ptr::null_mut;
 
-use winapi::ctypes::c_void;
 use winapi::shared::guiddef::GUID;
 use winapi::shared::hidpi::{HidP_GetCaps, PHIDP_PREPARSED_DATA};
 use winapi::shared::hidpi::{HIDP_CAPS, HIDP_STATUS_SUCCESS};
@@ -25,10 +24,8 @@ const DEVICE_VERSION_ID: u16 = 0x0001;
 const DEVICE_USAGE_PAGE: u16 = 0xFF00;
 const DEVICE_USAGE: u16 = 0x0001;
 
-const CONTROL_REPORT_ID: u8 = 0x40;
-const CONTROL_REPORT_SIZE: u32 = 0x41;
-const KEYBOARD_REPORT_ID: u8 = 0x07;
-const KEYBOARD_REPORT_SIZE: u8 = 0x09;
+pub const CONTROL_REPORT_ID: u8 = 0x40;
+pub const CONTROL_REPORT_SIZE: u32 = 0x41;
 
 #[derive(Debug)]
 pub enum DeviceError {
@@ -43,32 +40,8 @@ pub struct Device {
     handle: HANDLE,
 }
 
-#[repr(C)]
-#[derive(Debug)]
-struct KeyboardReport {
-    control_report_id: u8,
-    report_length: u8,
-    report_id: u8,
-    modifiers: u8,
-    _reserved: u8,
-    keys: [u8; 6],
-}
-
 impl Device {
-    pub(crate) fn send_keyboard_report(&self, modifiers: u8, keys: [u8; 6]) -> bool {
-        let mut report = KeyboardReport {
-            control_report_id: CONTROL_REPORT_ID,
-            report_length: KEYBOARD_REPORT_SIZE,
-            report_id: KEYBOARD_REPORT_ID,
-            modifiers,
-            _reserved: 0,
-            keys,
-        };
-
-        return self.send_report(&mut report as *mut _ as *mut c_void);
-    }
-
-    fn send_report(&self, data: PVOID) -> bool {
+    pub(crate) fn send_report(&self, data: PVOID) -> bool {
         let mut bytes_written = MaybeUninit::<DWORD>::uninit();
 
         unsafe {
