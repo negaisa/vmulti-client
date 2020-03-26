@@ -9,6 +9,12 @@ pub struct Mouse {
     device: Device,
 }
 
+pub enum MouseButton {
+    LeftButton,
+    RightButton,
+    MiddleButton,
+}
+
 #[repr(C)]
 #[derive(Debug)]
 struct MouseReport {
@@ -28,18 +34,32 @@ impl Mouse {
         Ok(Mouse { device })
     }
 
-    pub fn send_click(&self, button: u8, x: u16, y: u16, wheel_position: u8) -> bool {
+    pub fn send_click(
+        &self,
+        button: Option<MouseButton>,
+        x: u16,
+        y: u16,
+        wheel_position: u8,
+    ) -> bool {
+        let button_id = match button {
+            None => 0,
+            Some(MouseButton::LeftButton) => 1,
+            Some(MouseButton::RightButton) => 2,
+            Some(MouseButton::MiddleButton) => 3,
+        };
+
         let mut report = MouseReport {
             control_report_id: CONTROL_REPORT_ID,
             report_length: MOUSE_REPORT_SIZE,
             report_id: MOUSE_REPORT_ID,
-            button,
+            button: button_id,
             x,
             y,
             wheel_position,
         };
 
-        return self.device.send_report(&mut report as *mut _ as *mut c_void);
+        return self
+            .device
+            .send_report(&mut report as *mut _ as *mut c_void);
     }
-
 }
