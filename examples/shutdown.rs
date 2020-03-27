@@ -1,9 +1,11 @@
 use std::thread;
 use std::time::Duration;
+use vmulti_client::display::get_displays_info;
 use vmulti_client::mouse::{Mouse, MouseButton, MouseClick};
 
 fn main() {
-    let mouse = Mouse::init().unwrap();
+    let displays_info = get_displays_info();
+    let mouse = Mouse::init(displays_info).unwrap();
 
     // click start menu.
     mouse.send_click(

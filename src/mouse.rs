@@ -1,19 +1,17 @@
 use crate::device::{find_device, Device, DeviceError, CONTROL_REPORT_ID};
+use crate::display::DisplayInfo;
 use std::mem::size_of;
 use winapi::ctypes::c_void;
 
 const MOUSE_REPORT_ID: u8 = 0x03;
 const MOUSE_REPORT_SIZE: u8 = size_of::<MouseReport>() as u8;
 
-pub struct Mouse {
-    device: Device,
-}
-
 pub struct MouseClick {
     button: Option<MouseButton>,
     x: u16,
     y: u16,
     wheel_position: u8,
+    display_index: u8,
 }
 
 impl MouseClick {
@@ -23,6 +21,7 @@ impl MouseClick {
             x: 0,
             y: 0,
             wheel_position: 0,
+            display_index: 0,
         }
     }
 
@@ -39,6 +38,11 @@ impl MouseClick {
 
     pub fn set_wheel_position(mut self, wheel_position: u8) -> Self {
         self.wheel_position = wheel_position;
+        self
+    }
+
+    pub fn set_display_index(mut self, display_index: u8) -> Self {
+        self.display_index = display_index;
         self
     }
 }
@@ -61,11 +65,19 @@ struct MouseReport {
     wheel_position: u8,
 }
 
+pub struct Mouse {
+    device: Device,
+    displays_info: Vec<DisplayInfo>,
+}
+
 impl Mouse {
-    pub fn init() -> Result<Self, DeviceError> {
+    pub fn init(displays_info: Vec<DisplayInfo>) -> Result<Self, DeviceError> {
         let device = find_device()?;
 
-        Ok(Mouse { device })
+        Ok(Mouse {
+            device,
+            displays_info,
+        })
     }
 
     pub fn send_click(&self, click: MouseClick) -> bool {
