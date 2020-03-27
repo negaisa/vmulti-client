@@ -9,6 +9,40 @@ pub struct Mouse {
     device: Device,
 }
 
+pub struct MouseClick {
+    button: Option<MouseButton>,
+    x: u16,
+    y: u16,
+    wheel_position: u8,
+}
+
+impl MouseClick {
+    pub fn new() -> Self {
+        MouseClick {
+            button: None,
+            x: 0,
+            y: 0,
+            wheel_position: 0,
+        }
+    }
+
+    pub fn set_position(mut self, x: u16, y: u16) -> Self {
+        self.x = x;
+        self.y = y;
+        self
+    }
+
+    pub fn set_button(mut self, button: MouseButton) -> Self {
+        self.button = Some(button);
+        self
+    }
+
+    pub fn set_wheel_position(mut self, wheel_position: u8) -> Self {
+        self.wheel_position = wheel_position;
+        self
+    }
+}
+
 pub enum MouseButton {
     LeftButton,
     RightButton,
@@ -34,14 +68,8 @@ impl Mouse {
         Ok(Mouse { device })
     }
 
-    pub fn send_click(
-        &self,
-        button: Option<MouseButton>,
-        x: u16,
-        y: u16,
-        wheel_position: u8,
-    ) -> bool {
-        let button_id = match button {
+    pub fn send_click(&self, click: MouseClick) -> bool {
+        let button_id = match click.button {
             None => 0,
             Some(MouseButton::LeftButton) => 1,
             Some(MouseButton::RightButton) => 2,
@@ -53,9 +81,9 @@ impl Mouse {
             report_length: MOUSE_REPORT_SIZE,
             report_id: MOUSE_REPORT_ID,
             button: button_id,
-            x,
-            y,
-            wheel_position,
+            x: click.x,
+            y: click.y,
+            wheel_position: click.wheel_position,
         };
 
         return self
