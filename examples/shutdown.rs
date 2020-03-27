@@ -5,7 +5,7 @@ use vmulti_client::mouse::{Mouse, MouseButton, MouseClick};
 
 fn main() {
     let displays_info = get_displays_info();
-    let mouse = Mouse::init(displays_info).unwrap();
+    let mouse = Mouse::init(&displays_info).unwrap();
 
     // click start menu.
     mouse.send_click(

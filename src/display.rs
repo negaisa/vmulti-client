@@ -73,14 +73,14 @@ unsafe extern "system" fn display_info_callback(
 
 #[derive(Debug)]
 pub struct DisplayInfo {
-    primary: bool,
-    position: DisplayPosition,
+    pub primary: bool,
+    pub position: DisplayPosition,
 }
 
 #[derive(Debug)]
-pub(crate) struct DisplayPosition {
-    left: i32,
-    top: i32,
-    right: i32,
-    bottom: i32,
+pub struct DisplayPosition {
+    pub left: i32,
+    pub top: i32,
+    pub right: i32,
+    pub bottom: i32,
 }

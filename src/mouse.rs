@@ -11,7 +11,7 @@ pub struct MouseClick {
     x: u16,
     y: u16,
     wheel_position: u8,
-    display_index: u8,
+    display_index: Option<usize>,
 }
 
 impl MouseClick {
@@ -21,7 +21,7 @@ impl MouseClick {
             x: 0,
             y: 0,
             wheel_position: 0,
-            display_index: 0,
+            display_index: None,
         }
     }
 
@@ -41,8 +41,8 @@ impl MouseClick {
         self
     }
 
-    pub fn set_display_index(mut self, display_index: u8) -> Self {
-        self.display_index = display_index;
+    pub fn set_display_index(mut self, display_index: usize) -> Self {
+        self.display_index = Some(display_index);
         self
     }
 }
@@ -65,17 +65,19 @@ struct MouseReport {
     wheel_position: u8,
 }
 
-pub struct Mouse {
+pub struct Mouse<'di> {
     device: Device,
-    displays_info: Vec<DisplayInfo>,
+    primary_display_info: &'di DisplayInfo,
+    displays_info: &'di Vec<DisplayInfo>,
 }
 
-impl Mouse {
-    pub fn init(displays_info: Vec<DisplayInfo>) -> Result<Self, DeviceError> {
+impl<'di> Mouse<'di> {
+    pub fn init(displays_info: &'di Vec<DisplayInfo>) -> Result<Self, DeviceError> {
         let device = find_device()?;
 
         Ok(Mouse {
             device,
+            primary_display_info: displays_info.iter().find(|d| d.primary).unwrap(),
             displays_info,
         })
     }
@@ -86,6 +88,14 @@ impl Mouse {
             Some(MouseButton::LeftButton) => 1,
             Some(MouseButton::RightButton) => 2,
             Some(MouseButton::MiddleButton) => 3,
+        };
+
+        let display_info = match click.display_index {
+            Some(display_index) => self
+                .displays_info
+                .get(display_index)
+                .unwrap_or_else(|| &self.primary_display_info),
+            _ => &self.primary_display_info,
         };
 
         let mut report = MouseReport {
