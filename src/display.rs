@@ -9,6 +9,22 @@ use winapi::shared::windef::RECT;
 use winapi::um::winuser::MONITORINFO;
 use winapi::um::winuser::{EnumDisplayMonitors, GetMonitorInfoW};
 
+#[derive(Debug)]
+pub struct DisplayInfo {
+    pub primary: bool,
+    pub position: DisplayPosition,
+    pub width: u16,
+    pub height: u16,
+}
+
+#[derive(Debug)]
+pub struct DisplayPosition {
+    pub left: i32,
+    pub top: i32,
+    pub right: i32,
+    pub bottom: i32,
+}
+
 pub fn get_displays_info() -> Vec<DisplayInfo> {
     let mut displays_info: Vec<DisplayInfo> = Vec::new();
 
@@ -64,23 +80,11 @@ unsafe extern "system" fn display_info_callback(
     let display_info = DisplayInfo {
         primary: monitor_info.dwFlags == 1,
         position: display_position,
+        width: (rect.left - rect.right).abs() as u16,
+        height: ((rect.top - rect.bottom).abs()) as u16,
     };
 
     displays_info.push(display_info);
 
     1
-}
-
-#[derive(Debug)]
-pub struct DisplayInfo {
-    pub primary: bool,
-    pub position: DisplayPosition,
-}
-
-#[derive(Debug)]
-pub struct DisplayPosition {
-    pub left: i32,
-    pub top: i32,
-    pub right: i32,
-    pub bottom: i32,
 }

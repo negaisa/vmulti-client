@@ -11,10 +11,10 @@ fn main() {
     mouse.send_click(
         MouseClick::new()
             .set_button(MouseButton::LeftButton)
-            .set_position(1000, 32767),
+            .set_position(20, 1060),
     );
 
-    mouse.send_click(MouseClick::new().set_position(1000, 32767));
+    mouse.send_click(MouseClick::new().set_position(20, 1060));
 
     let sleep_duration = Duration::from_millis(1000);
     thread::sleep(sleep_duration);
@@ -23,10 +23,10 @@ fn main() {
     mouse.send_click(
         MouseClick::new()
             .set_button(MouseButton::LeftButton)
-            .set_position(1000, 30767),
+            .set_position(5, 1015),
     );
-    mouse.send_click(MouseClick::new().set_position(1000, 30767));
+    mouse.send_click(MouseClick::new().set_position(20, 1015));
 
     thread::sleep(sleep_duration);
-    mouse.send_click(MouseClick::new().set_position(1000, 26767));
+    mouse.send_click(MouseClick::new().set_position(20, 960));
 }
