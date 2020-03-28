@@ -1,7 +1,9 @@
 # vmulti-client
-Crate for interacting with virtual input driver. Works only in windows.
+[![crates.io](https://img.shields.io/crates/v/vmulti-client.svg)](https://crates.io/crates/vmulti-client)
 
-### Driver install guide
+Crate for interacting with virtual input driver. Works only on Windows.
+
+## Driver install guide
 
 Before installing the driver, you must disable driver signature verification.
  
