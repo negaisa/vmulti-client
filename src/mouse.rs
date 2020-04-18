@@ -49,9 +49,9 @@ impl MouseClick {
 }
 
 pub enum MouseButton {
-    LeftButton,
-    RightButton,
-    MiddleButton,
+    Left,
+    Right,
+    Middle,
 }
 
 #[repr(C)]
@@ -100,11 +100,11 @@ impl<'di> Mouse<'di> {
     }
 
     pub fn send_click(&self, click: MouseClick) -> bool {
-        let button_id = match click.button {
+        let button = match click.button {
             None => 0,
-            Some(MouseButton::LeftButton) => 1,
-            Some(MouseButton::RightButton) => 2,
-            Some(MouseButton::MiddleButton) => 3,
+            Some(MouseButton::Left) => 1,
+            Some(MouseButton::Right) => 2,
+            Some(MouseButton::Middle) => 4,
         };
 
         let display_info = match click.display_index {
@@ -136,7 +136,7 @@ impl<'di> Mouse<'di> {
             control_report_id: CONTROL_REPORT_ID,
             report_length: MOUSE_REPORT_SIZE,
             report_id: MOUSE_REPORT_ID,
-            button: button_id,
+            button,
             x,
             y,
             wheel_position: click.wheel_position,
