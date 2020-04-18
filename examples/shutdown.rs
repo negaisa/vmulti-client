@@ -10,7 +10,7 @@ fn main() {
     // click start menu.
     mouse.send_click(
         MouseClick::new()
-            .set_button(MouseButton::LeftButton)
+            .set_button(MouseButton::Left)
             .set_position(20, 1060),
     );
 
@@ -22,7 +22,7 @@ fn main() {
     // click shutdown menu.
     mouse.send_click(
         MouseClick::new()
-            .set_button(MouseButton::LeftButton)
+            .set_button(MouseButton::Left)
             .set_position(5, 1015),
     );
     mouse.send_click(MouseClick::new().set_position(20, 1015));
