@@ -58,9 +58,9 @@ pub enum MouseButton {
 
 #[derive(Debug)]
 pub struct MousePosition {
-    pub display_index: u8,
-    pub x: u32,
-    pub y: u32,
+    pub display_index: usize,
+    pub x: u16,
+    pub y: u16,
 }
 
 #[repr(C)]
@@ -173,11 +173,11 @@ impl<'di> Mouse<'di> {
             .enumerate()
             .map(|(index, info)| (index, &info.position))
             .find(|(_, position)| global_x >= position.left && global_x <= position.right)
-            .map(|(index, position)| (index as u8, (global_x - position.left) as u32))
+            .map(|(index, position)| (index, (global_x - position.left) as u16))
             .unwrap();
 
         // For simplicity, we assume that all monitors will be lined up and will have the same height.
-        let y = global_y as u32;
+        let y = global_y as u16;
 
         MousePosition {
             display_index,
