@@ -56,6 +56,13 @@ pub enum MouseButton {
     Middle,
 }
 
+#[derive(Debug)]
+pub struct MousePosition {
+    pub display_index: u8,
+    pub x: u32,
+    pub y: u32,
+}
+
 #[repr(C)]
 #[derive(Debug)]
 struct MouseReport {
@@ -147,25 +154,35 @@ impl<'di> Mouse<'di> {
         self.device
             .send_report(&mut report as *mut _ as *mut c_void)
     }
-}
 
-#[derive(Debug)]
-pub struct CursorPosition {
-    pub x: u32,
-    pub y: u32,
-}
+    pub fn get_mouse_position(&self) -> MousePosition {
+        let mut maybe_point = MaybeUninit::<POINT>::uninit();
 
-pub fn get_cursor_position() -> CursorPosition {
-    let mut maybe_point = MaybeUninit::<POINT>::uninit();
+        unsafe {
+            GetCursorPos(maybe_point.as_mut_ptr());
+        }
 
-    unsafe {
-        GetCursorPos(maybe_point.as_mut_ptr());
+        let point = unsafe { maybe_point.assume_init() };
+
+        let global_x = point.x;
+        let global_y = point.y;
+
+        let (display_index, x) = self
+            .displays_info
+            .iter()
+            .enumerate()
+            .map(|(index, info)| (index, &info.position))
+            .find(|(_, position)| global_x >= position.left && global_x <= position.right)
+            .map(|(index, position)| (index as u8, (global_x - position.left) as u32))
+            .unwrap();
+
+        // For simplicity, we assume that all monitors will be lined up and will have the same height.
+        let y = global_y as u32;
+
+        MousePosition {
+            display_index,
+            x,
+            y,
+        }
     }
-
-    let point = unsafe { maybe_point.assume_init() };
-
-    let x = point.x as u32;
-    let y = point.y as u32;
-
-    CursorPosition { x, y }
 }
