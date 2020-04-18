@@ -1,7 +1,9 @@
 use crate::device::{find_device, Device, DeviceError, CONTROL_REPORT_ID};
 use crate::display::DisplayInfo;
-use std::mem::size_of;
+use std::mem::{size_of, MaybeUninit};
 use winapi::ctypes::c_void;
+use winapi::shared::windef::POINT;
+use winapi::um::winuser::GetCursorPos;
 
 const MOUSE_REPORT_ID: u8 = 0x03;
 const MOUSE_REPORT_SIZE: u8 = size_of::<MouseReport>() as u8;
@@ -142,8 +144,28 @@ impl<'di> Mouse<'di> {
             wheel_position: click.wheel_position,
         };
 
-        return self
-            .device
-            .send_report(&mut report as *mut _ as *mut c_void);
+        self.device
+            .send_report(&mut report as *mut _ as *mut c_void)
     }
+}
+
+#[derive(Debug)]
+pub struct CursorPosition {
+    pub x: u32,
+    pub y: u32,
+}
+
+pub fn get_cursor_position() -> CursorPosition {
+    let mut maybe_point = MaybeUninit::<POINT>::uninit();
+
+    unsafe {
+        GetCursorPos(maybe_point.as_mut_ptr());
+    }
+
+    let point = unsafe { maybe_point.assume_init() };
+
+    let x = point.x as u32;
+    let y = point.y as u32;
+
+    CursorPosition { x, y }
 }
