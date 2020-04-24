@@ -10,7 +10,7 @@ const MOUSE_REPORT_SIZE: u8 = size_of::<MouseReport>() as u8;
 const MOUSE_COORDINATES_RANGE: u32 = 32_768;
 
 pub struct MouseClick {
-    button: Option<MouseButton>,
+    buttons: u8,
     x: u16,
     y: u16,
     wheel_position: u8,
@@ -20,7 +20,7 @@ pub struct MouseClick {
 impl MouseClick {
     pub fn new() -> Self {
         MouseClick {
-            button: None,
+            buttons: 0,
             x: 0,
             y: 0,
             wheel_position: 0,
@@ -35,7 +35,12 @@ impl MouseClick {
     }
 
     pub fn set_button(mut self, button: MouseButton) -> Self {
-        self.button = Some(button);
+        self.buttons |= match button {
+            MouseButton::Left => 1,
+            MouseButton::Right => 2,
+            MouseButton::Middle => 4,
+        };
+
         self
     }
 
@@ -69,7 +74,7 @@ struct MouseReport {
     control_report_id: u8,
     report_length: u8,
     report_id: u8,
-    button: u8,
+    buttons: u8,
     x: u16,
     y: u16,
     wheel_position: u8,
@@ -109,13 +114,6 @@ impl<'di> Mouse<'di> {
     }
 
     pub fn send_click(&self, click: MouseClick) -> bool {
-        let button = match click.button {
-            None => 0,
-            Some(MouseButton::Left) => 1,
-            Some(MouseButton::Right) => 2,
-            Some(MouseButton::Middle) => 4,
-        };
-
         let display_info = match click.display_index {
             Some(display_index) => self
                 .displays_info
@@ -141,11 +139,13 @@ impl<'di> Mouse<'di> {
         let x = ((click.x as u32 + offset_x) as f64 * self.mouse_x_coord_per_pixel) as u16;
         let y = ((click.y as u32 + offset_y) as f64 * self.mouse_y_coord_per_pixel) as u16;
 
+        let buttons = click.buttons;
+
         let mut report = MouseReport {
             control_report_id: CONTROL_REPORT_ID,
             report_length: MOUSE_REPORT_SIZE,
             report_id: MOUSE_REPORT_ID,
-            button,
+            buttons,
             x,
             y,
             wheel_position: click.wheel_position,
