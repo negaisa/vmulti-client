@@ -192,3 +192,9 @@ impl Keyboard {
             .send_report(&mut report as *mut _ as *mut c_void);
     }
 }
+
+impl Drop for Keyboard {
+    fn drop(&mut self) {
+        self.send_click(KeysClick::new());
+    }
+}
