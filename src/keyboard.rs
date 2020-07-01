@@ -1,6 +1,7 @@
 use crate::device::{find_device, Device, DeviceError, CONTROL_REPORT_ID};
 use itertools::concat;
 use itertools::join;
+use std::convert::TryFrom;
 use std::fmt::Display;
 use std::mem::size_of;
 use winapi::_core::fmt::{Error, Formatter};
@@ -157,6 +158,103 @@ impl KeysClick {
     pub fn add_key(mut self, key: KeyboardKey) -> Self {
         self.keys.push(key);
         self
+    }
+}
+
+impl TryFrom<&str> for KeyboardKey {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value.to_lowercase().as_str() {
+            "a" => Ok(KeyboardKey::A),
+            "b" => Ok(KeyboardKey::B),
+            "c" => Ok(KeyboardKey::C),
+            "d" => Ok(KeyboardKey::D),
+            "e" => Ok(KeyboardKey::E),
+            "f" => Ok(KeyboardKey::F),
+            "g" => Ok(KeyboardKey::G),
+            "h" => Ok(KeyboardKey::H),
+            "i" => Ok(KeyboardKey::I),
+            "j" => Ok(KeyboardKey::J),
+            "k" => Ok(KeyboardKey::K),
+            "l" => Ok(KeyboardKey::L),
+            "m" => Ok(KeyboardKey::M),
+            "n" => Ok(KeyboardKey::N),
+            "o" => Ok(KeyboardKey::O),
+            "p" => Ok(KeyboardKey::P),
+            "q" => Ok(KeyboardKey::Q),
+            "r" => Ok(KeyboardKey::R),
+            "s" => Ok(KeyboardKey::S),
+            "t" => Ok(KeyboardKey::T),
+            "u" => Ok(KeyboardKey::U),
+            "v" => Ok(KeyboardKey::V),
+            "w" => Ok(KeyboardKey::W),
+            "x" => Ok(KeyboardKey::X),
+            "y" => Ok(KeyboardKey::Y),
+            "z" => Ok(KeyboardKey::Z),
+            "1" => Ok(KeyboardKey::Num1),
+            "2" => Ok(KeyboardKey::Num2),
+            "3" => Ok(KeyboardKey::Num3),
+            "4" => Ok(KeyboardKey::Num4),
+            "5" => Ok(KeyboardKey::Num5),
+            "6" => Ok(KeyboardKey::Num6),
+            "7" => Ok(KeyboardKey::Num7),
+            "8" => Ok(KeyboardKey::Num8),
+            "9" => Ok(KeyboardKey::Num9),
+            "0" => Ok(KeyboardKey::Num0),
+            "enter" => Ok(KeyboardKey::Enter),
+            "esc" => Ok(KeyboardKey::Esc),
+            "del" => Ok(KeyboardKey::Del),
+            "tab" => Ok(KeyboardKey::Tab),
+            "space" => Ok(KeyboardKey::Space),
+            v if v.is_empty() => Err("Input is empty"),
+            _ => Err("Invalid input"),
+        }
+    }
+}
+
+impl TryFrom<&str> for KeyboardModifierKey {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value.to_lowercase().as_str() {
+            "left-ctrl" => Ok(KeyboardModifierKey::LeftControl),
+            "left-shift" => Ok(KeyboardModifierKey::LeftShift),
+            "left-alt" => Ok(KeyboardModifierKey::LeftAlt),
+            "left-win" => Ok(KeyboardModifierKey::LeftWindows),
+            "right-ctrl" => Ok(KeyboardModifierKey::RightControl),
+            "right-shift" => Ok(KeyboardModifierKey::RightShift),
+            "right-alt" => Ok(KeyboardModifierKey::RightAlt),
+            "right-win" => Ok(KeyboardModifierKey::RightWindows),
+            v if v.is_empty() => Err("Input is empty"),
+            _ => Err("Invalid input"),
+        }
+    }
+}
+
+impl TryFrom<&str> for KeysClick {
+    type Error = &'static str;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        if value.is_empty() {
+            return Err("Input is empty");
+        }
+
+        let split: Vec<&str> = value.split("+").collect();
+        let mut keys_click = KeysClick::empty();
+
+        for arg in split {
+            let try_modifier = KeyboardModifierKey::try_from(arg);
+            let try_key = KeyboardKey::try_from(arg);
+
+            keys_click = match (try_modifier, try_key) {
+                (Ok(modifier), Err(_)) => keys_click.add_modifier(modifier),
+                (Err(_), Ok(key)) => keys_click.add_key(key),
+                _ => return Err("Invalid input"),
+            }
+        }
+
+        Ok(keys_click)
     }
 }
 
