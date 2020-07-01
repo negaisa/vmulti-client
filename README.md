@@ -3,6 +3,10 @@
 
 Crate for interacting with virtual input driver. Works only on Windows.
 
+## Example
+
+You can find an example API in the examples folder.
+
 ## Driver install guide
 
 Before installing the driver, you must disable driver signature verification.
