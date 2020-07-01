@@ -1,6 +1,6 @@
 [package]
 name = "vmulti-client"
-version = "0.2.1"
+version = "0.3.0"
 authors = ["vagola <vladislavs.golubs@yandex.ru>"]
 edition = "2018"
 description = "Crate for interacting with virtual input driver"
