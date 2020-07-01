@@ -1,7 +1,6 @@
 use std::thread;
 use std::time::Duration;
 use vmulti_client::display::get_displays_info;
-use vmulti_client::keyboard::{Keyboard, KeyboardKey, KeyboardModifierKey, KeysClick};
 use vmulti_client::mouse::{Mouse, MouseButton, MouseClick};
 
 fn main() {
@@ -18,7 +17,7 @@ fn main() {
             .set_position(center_x, center_y),
     );
 
-    for i in 0..1000 {
+    for _ in 0..1000 {
         mouse.send_click(
             MouseClick::new()
                 .set_display_index(1)
