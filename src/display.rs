@@ -9,7 +9,7 @@ use winapi::shared::windef::RECT;
 use winapi::um::winuser::MONITORINFO;
 use winapi::um::winuser::{EnumDisplayMonitors, GetMonitorInfoW};
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct DisplayInfo {
     pub primary: bool,
     pub position: DisplayPosition,
@@ -17,7 +17,7 @@ pub struct DisplayInfo {
     pub height: u16,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct DisplayPosition {
     pub left: i32,
     pub top: i32,
