@@ -55,13 +55,14 @@ impl MouseClick {
     }
 }
 
+#[derive(Debug, Copy, Clone)]
 pub enum MouseButton {
     Left,
     Right,
     Middle,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct MousePosition {
     pub display_index: usize,
     pub x: u16,
