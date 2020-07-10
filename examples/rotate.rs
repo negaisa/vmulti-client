@@ -5,9 +5,10 @@ use vmulti_client::mouse::{Mouse, MouseButton, MouseClick};
 
 fn main() {
     let displays_info = get_displays_info();
-    let mouse = Mouse::init(&displays_info).unwrap();
+    let display_info = displays_info[1];
 
-    let display_info = &displays_info[1];
+    let mouse = Mouse::init(displays_info).unwrap();
+
     let center_x = display_info.width / 2;
     let center_y = display_info.height / 2;
 

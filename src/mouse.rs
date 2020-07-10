@@ -81,20 +81,20 @@ struct MouseReport {
     wheel_position: u8,
 }
 
-pub struct Mouse<'di> {
+pub struct Mouse {
     device: Device,
-    primary_display_info: &'di DisplayInfo,
-    displays_info: &'di Vec<DisplayInfo>,
+    primary_display_info: DisplayInfo,
+    displays_info: Vec<DisplayInfo>,
     mouse_x_coord_per_pixel: f64,
     mouse_y_coord_per_pixel: f64,
 }
 
-impl<'di> Mouse<'di> {
-    pub fn init(displays_info: &'di Vec<DisplayInfo>) -> Result<Self, DeviceError> {
+impl Mouse {
+    pub fn init(displays_info: Vec<DisplayInfo>) -> Result<Self, DeviceError> {
         let device = find_device()?;
 
         // By default we use primary display.
-        let primary_display_info = displays_info.iter().find(|d| d.primary).unwrap();
+        let primary_display_info = *displays_info.iter().find(|d| d.primary).unwrap();
 
         let total_width = displays_info.iter().map(|d| d.width as u32).sum::<u32>() as u32;
         // For simplicity, we assume that all monitors will be lined up and will have the same height.
