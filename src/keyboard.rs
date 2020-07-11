@@ -10,7 +10,7 @@ use winapi::ctypes::c_void;
 const KEYBOARD_REPORT_ID: u8 = 0x07;
 const KEYBOARD_REPORT_SIZE: u8 = size_of::<KeyboardReport>() as u8;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum KeyboardKey {
     A,
     B,
@@ -105,7 +105,7 @@ impl KeyboardKey {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum KeyboardModifierKey {
     LeftControl,
     LeftShift,
@@ -132,7 +132,7 @@ impl KeyboardModifierKey {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct KeysClick {
     modifiers: Vec<KeyboardModifierKey>,
     keys: Vec<KeyboardKey>,
